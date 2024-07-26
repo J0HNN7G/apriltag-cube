@@ -2,6 +2,9 @@ import numpy as np
 import os
 import argparse
 import shutil
+import csv
+from scipy.spatial.transform import Rotation as R
+
 
 def generate_cube_with_materials(side_length, family_dir, output_dir):
     family_name = os.path.basename(os.path.normpath(family_dir))
@@ -13,7 +16,7 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
 
     obj_file = os.path.join(output_dir, f'{cube_name}.obj')
     mtl_file = os.path.join(output_dir, f'{cube_name}.mtl')
-    glb_file = os.path.join(output_dir, f'{cube_name}.glb')
+    csv_file = os.path.join(output_dir, f'{cube_name}.csv')
 
     # Define vertices of the cube
     half_side = side_length / 2.0
@@ -118,6 +121,47 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
             f.write(f"f {' '.join(face_txt)}\n")
             f.write("\n")
     print(f"OBJ file saved to {obj_file}")
+
+    # Calculate transformations and save to CSV
+    face_centers = {
+        0: [0, 0, -half_side],  # front
+        1: [0, 0, half_side],   # back
+        2: [0, half_side, 0],   # top
+        3: [0, -half_side, 0],  # bottom
+        4: [-half_side, 0, 0],  # left
+        5: [half_side, 0, 0]    # right
+    }
+
+    rotations = {
+        0: [0, 0, 0, 1],                         # front
+        1: [0, 0, 1, 0],                         # back
+        2: R.from_euler('x', 90, degrees=True).as_quat().tolist(),  # top
+        3: R.from_euler('x', -90, degrees=True).as_quat().tolist(), # bottom
+        4: R.from_euler('y', 90, degrees=True).as_quat().tolist(),  # left
+        5: R.from_euler('y', -90, degrees=True).as_quat().tolist()  # right
+    }
+
+    with open(csv_file, 'w', newline='') as csvfile:
+        fieldnames = ['face_idx', 'translation_x', 'translation_y', 'translation_z', 'rotation_w', 'rotation_x', 'rotation_y', 'rotation_z']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for idx in range(6):
+            translation = face_centers[idx]
+            rotation = rotations[idx]
+            writer.writerow({
+                'face_idx': idx,
+                'translation_x': translation[0],
+                'translation_y': translation[1],
+                'translation_z': translation[2],
+                'rotation_w': rotation[3],
+                'rotation_x': rotation[0],
+                'rotation_y': rotation[1],
+                'rotation_z': rotation[2]
+            })
+
+    print(f"CSV file saved to {csv_file}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a cube with textures and convert to GLB.")
