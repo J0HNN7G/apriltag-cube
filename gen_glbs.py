@@ -1,6 +1,7 @@
 import bpy
 import sys
 from pathlib import Path
+import math
 
 def generate_cube_with_materials(data_dir):
     obj_paths = list(data_dir.glob('*/*.obj'))
@@ -24,6 +25,26 @@ def generate_cube_with_materials(data_dir):
                             node.interpolation = 'Closest' 
                 else:
                     print("No material node tree found")
+            
+            obj_objects = bpy.context.selected_objects[:]
+            for obj in obj_objects:
+                bpy.ops.object.select_all(action='DESELECT')
+                obj.select_set(True)
+                bpy.context.view_layer.objects.active = obj
+                # go edit mode
+                bpy.ops.object.mode_set(mode='EDIT')
+                # select al faces
+                bpy.ops.mesh.select_all(action='SELECT')
+                # recalculate outside normals 
+                bpy.ops.mesh.normals_make_consistent(inside=False)
+                # go object mode again
+                bpy.ops.object.editmode_toggle()
+
+                bpy.context.active_object.rotation_euler[0] = math.radians(0)
+                bpy.context.active_object.rotation_euler[1] = math.radians(0)
+                bpy.context.active_object.rotation_euler[2] = math.radians(0)
+
+
             bpy.ops.export_scene.gltf(filepath=glb_file, export_format='GLB')
             print(f"GLB file saved to {glb_file}")
         except Exception as e:
