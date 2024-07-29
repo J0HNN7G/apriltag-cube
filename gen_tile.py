@@ -5,9 +5,10 @@ import shutil
 import csv
 from scipy.spatial.transform import Rotation as R
 
-def generate_tile_with_materials(side_length, family_dir, output_dir):
+def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided):
     family_name = os.path.basename(os.path.normpath(family_dir))
-    tile_name = f'tile_{family_name}_{side_length}'
+    num_textures = 1 if one_sided else 2
+    tile_name = f'tile{num_textures}_{family_name}_{side_length}'
 
     # Ensure the output directory exists
     output_dir = os.path.join(output_dir, tile_name)
@@ -120,9 +121,11 @@ def generate_tile_with_materials(side_length, family_dir, output_dir):
         ]
 
         for i in range(6):
-            if i < 2:  # First two faces with textures
-                f.write(f"usemtl material_{i}\n")
-            else:  # Other four faces with white material
+            if i == 0:  # First face with texture
+                f.write(f"usemtl material_0\n")
+            elif i == 1 and not one_sided:  # Second face with texture if not one-sided
+                f.write(f"usemtl material_1\n")
+            else:  # Other faces with white material
                 f.write("usemtl white_material\n")
                 
             for j in range(2):
@@ -153,6 +156,8 @@ def generate_tile_with_materials(side_length, family_dir, output_dir):
         writer.writeheader()
 
         for idx in range(2):  # Only for the textured faces
+            if idx == 1 and one_sided:
+                continue
             translation = face_centers[idx]
             rotation = rotations[idx]
             writer.writerow({
@@ -173,7 +178,8 @@ if __name__ == "__main__":
     parser.add_argument("side_length", type=float, help="The length of the tile's side.")
     parser.add_argument("family_dir", type=str, help="Directory containing texture files.")
     parser.add_argument("output_dir", type=str, help="Directory to save the output files.")
+    parser.add_argument("--one-sided", action='store_true', help="If set, only the front will use a texture, and the back will be white.")
 
     args = parser.parse_args()
 
-    generate_tile_with_materials(args.side_length, args.family_dir, args.output_dir)
+    generate_tile_with_materials(args.side_length, args.family_dir, args.output_dir, args.one_sided)
