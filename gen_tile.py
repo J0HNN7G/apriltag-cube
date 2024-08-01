@@ -104,9 +104,9 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
         # Write texture coordinates (covering full texture per face)
         texture_coords = np.array([
             [0.0, 0.0],
-            [1.0, 0.0],
+            [0.0, 1.0],
             [1.0, 1.0],
-            [0.0, 1.0]
+            [1.0, 0.0]
         ])
 
         for vt in texture_coords:
