@@ -143,9 +143,9 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
             rotation = rotations[idx]
             writer.writerow({
                 'face_id': idx,
-                'trans_x': translation[0],
-                'trans_y': translation[1],
-                'trans_z': translation[2],
+                'trans_x': - translation[0],
+                'trans_y': - translation[1],
+                'trans_z': - translation[2],
                 'rot_w': rotation[3],
                 'rot_x': rotation[0],
                 'rot_y': rotation[1],
