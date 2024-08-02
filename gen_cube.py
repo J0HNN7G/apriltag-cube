@@ -33,12 +33,12 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
 
     # Define faces of the cube (two triangles per face)
     faces = np.array([
-        [0, 1, 2, 3],  # front
-        [4, 5, 6, 7],  # back
-        [0, 1, 5, 4],  # top
-        [1, 2, 6, 5],  # bottom
-        [2, 3, 7, 6],  # left
-        [3, 0, 4, 7]   # right
+        [0, 1, 5, 4],  # x
+        [2, 3, 7, 6],  # -x
+        [3, 0, 4, 7],  # y
+        [1, 2, 6, 5],  # -y
+        [5, 6, 7, 4],  # z
+        [0, 3, 2, 1]   # -z
     ])
 
     triangles = []
@@ -101,7 +101,7 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
         f.write("\n")
 
         # Write faces with materials and normals
-        face_vt_map = [[1, 2, 3], [3, 4, 1]]
+        face_vt_map = [[4, 1, 2], [2, 3, 4]]
         for i in range(6): 
             f.write(f"usemtl material_{i}\n")
             for j in range(2):
@@ -116,25 +116,25 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
 
     # Calculate transformations and save to CSV
     face_centers = {
-        0: [0, 0, -half_side],  # front
-        1: [0, 0, half_side],   # back
-        2: [0, half_side, 0],   # top
-        3: [0, -half_side, 0],  # bottom
-        4: [-half_side, 0, 0],  # left
-        5: [half_side, 0, 0]    # right
+        0: [half_side, 0, 0],   # x
+        1: [-half_side, 0, 0],  # -x
+        2: [0, half_side, 0],   # y
+        3: [0, -half_side, 0],  # -y
+        4: [0, 0, half_side],   # z
+        5: [0, 0, -half_side]   # -z
     }
 
     rotations = {
-        0: [0, 0, 0, 1],                         # front
-        1: [0, 0, 1, 0],                         # back
-        2: R.from_euler('x', 90, degrees=True).as_quat().tolist(),  # top
-        3: R.from_euler('x', -90, degrees=True).as_quat().tolist(), # bottom
-        4: R.from_euler('y', 90, degrees=True).as_quat().tolist(),  # left
-        5: R.from_euler('y', -90, degrees=True).as_quat().tolist()  # right
+        0: [0, 0, 0, 1],
+        1: [0, 0, 0, 1],
+        2: [0, 0, 0, 1],
+        3: [0, 0, 0, 1],
+        4: [0, 0, 0, 1],
+        5: [0, 0, 0, 1]
     }
 
     with open(csv_file, 'w', newline='') as csvfile:
-        fieldnames = ['face_idx', 'translation_x', 'translation_y', 'translation_z', 'rotation_w', 'rotation_x', 'rotation_y', 'rotation_z']
+        fieldnames = ['face_id', 'trans_x', 'trans_y', 'trans_z', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
@@ -142,14 +142,14 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
             translation = face_centers[idx]
             rotation = rotations[idx]
             writer.writerow({
-                'face_idx': idx,
-                'translation_x': translation[0],
-                'translation_y': translation[1],
-                'translation_z': translation[2],
-                'rotation_w': rotation[3],
-                'rotation_x': rotation[0],
-                'rotation_y': rotation[1],
-                'rotation_z': rotation[2]
+                'face_id': idx,
+                'trans_x': translation[0],
+                'trans_y': translation[1],
+                'trans_z': translation[2],
+                'rot_w': rotation[3],
+                'rot_x': rotation[0],
+                'rot_y': rotation[1],
+                'rot_z': rotation[2]
             })
 
     print(f"CSV file saved to {csv_file}")
