@@ -40,9 +40,9 @@ def generate_cube_with_materials(data_dir):
                 # go object mode again
                 bpy.ops.object.editmode_toggle()
 
-                bpy.context.active_object.rotation_euler[0] = math.radians(0)
-                bpy.context.active_object.rotation_euler[1] = math.radians(0)
-                bpy.context.active_object.rotation_euler[2] = math.radians(0)
+                # bpy.context.active_object.rotation_euler[0] = math.radians(0)
+                # bpy.context.active_object.rotation_euler[1] = math.radians(0)
+                # bpy.context.active_object.rotation_euler[2] = math.radians(0)
 
 
             bpy.ops.export_scene.gltf(filepath=glb_file, export_format='GLB')
