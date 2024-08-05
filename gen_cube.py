@@ -114,38 +114,25 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
             f.write("\n")
     print(f"OBJ file saved to {obj_file}")
 
-    # Calculate transformations and save to CSV
-    face_centers = {
-        0: [half_side, 0, 0],   # x
-        1: [-half_side, 0, 0],  # -x
-        2: [0, half_side, 0],   # y
-        3: [0, -half_side, 0],  # -y
-        4: [0, 0, half_side],   # z
-        5: [0, 0, -half_side]   # -z
-    }
-
-    rotations = {
-        0: [0, 0, 0, 1],
-        1: [0, 0, 0, 1],
-        2: [0, 0, 0, 1],
-        3: [0, 0, 0, 1],
+    # just trust me on this (I found them all by hand)
+    rotations = {   
+        0: [-0.5, -0.5, -0.5,  0.5],
+        1: [-0.5,  0.5,  0.5,  0.5], 
+        2: [0, -0.70710678, -0.70710678, 0],
+        3: [-0.70710678, 0, 0, 0.70710678],
         4: [0, 0, 0, 1],
-        5: [0, 0, 0, 1]
+        5: [-1, 0, 0, 0]
     }
 
     with open(csv_file, 'w', newline='') as csvfile:
-        fieldnames = ['face_id', 'trans_x', 'trans_y', 'trans_z', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
+        fieldnames = ['face_id', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
         for idx in range(6):
-            translation = face_centers[idx]
             rotation = rotations[idx]
             writer.writerow({
                 'face_id': idx,
-                'trans_x': - translation[0],
-                'trans_y': - translation[1],
-                'trans_z': - translation[2],
                 'rot_w': rotation[3],
                 'rot_x': rotation[0],
                 'rot_y': rotation[1],
