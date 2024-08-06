@@ -25,24 +25,24 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
     half_side = side_length / 2.0
     half_thin_side = thin_side_width / 2.0
     vertices = np.array([
-        [half_side, half_side, -half_thin_side],   # 0
-        [half_side, -half_side, -half_thin_side],  # 1
-        [-half_side, -half_side, -half_thin_side], # 2
-        [-half_side, half_side, -half_thin_side],  # 3
-        [half_side, half_side, half_thin_side],    # 4
-        [half_side, -half_side, half_thin_side],   # 5
-        [-half_side, -half_side, half_thin_side],  # 6
-        [-half_side, half_side, half_thin_side]    # 7
+        [half_thin_side, half_side, -half_side],   # 0
+        [half_thin_side, -half_side, -half_side],  # 1
+        [-half_thin_side, -half_side, -half_side], # 2
+        [-half_thin_side, half_side, -half_side],  # 3
+        [half_thin_side, half_side, half_side],    # 4
+        [half_thin_side, -half_side, half_side],   # 5
+        [-half_thin_side, -half_side, half_side],  # 6
+        [-half_thin_side, half_side, half_side]    # 7
     ])
 
-    # Define faces of the tile (two triangles per face)
+    # Define faces of the cube (two triangles per face)
     faces = np.array([
-        [0, 1, 2, 3],  # front
-        [4, 5, 6, 7],  # back
-        [0, 1, 5, 4],  # top
-        [1, 2, 6, 5],  # bottom
-        [2, 3, 7, 6],  # left
-        [3, 0, 4, 7]   # right
+        [0, 1, 5, 4],  # x
+        [2, 3, 7, 6],  # -x
+        [3, 0, 4, 7],  # y
+        [1, 2, 6, 5],  # -y
+        [5, 6, 7, 4],  # z
+        [0, 3, 2, 1]   # -z
     ])
 
     triangles = []
@@ -64,6 +64,8 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
         src = os.path.join(family_dir, texture_file)
         dst = os.path.join(output_dir, texture_file)
         shutil.copy(src, dst)  # Use shutil to copy the file
+        if one_sided:
+            break
 
     # Write MTL file
     with open(mtl_file, 'w') as f:
@@ -115,10 +117,7 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
         f.write("\n")
 
         # Write faces with materials and texture coordinates
-        face_vt_map = [
-            [1, 2, 3],
-            [3, 4, 1]
-        ]
+        face_vt_map = [[4, 1, 2], [2, 3, 4]]
 
         for i in range(6):
             if i == 0:  # First face with texture
@@ -139,36 +138,31 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
 
     print(f"OBJ file saved to {obj_file}")
 
-    # Calculate transformations and save to CSV
-    face_centers = {
-        0: [0, 0, -half_thin_side],  # front
-        1: [0, 0, half_thin_side]    # back
-    }
-
-    rotations = {
-        0: [0, 0, 0, 1],                         # front
-        1: [0, 0, 1, 0]                          # back
+    # just trust me on this (I found them all by hand)
+    rotations = {   
+        0: [-0.5, -0.5, -0.5,  0.5],
+        1: [-0.5,  0.5,  0.5,  0.5], 
+        2: [0, -0.70710678, -0.70710678, 0],
+        3: [-0.70710678, 0, 0, 0.70710678],
+        4: [0, 0, 0, 1],
+        5: [-1, 0, 0, 0]
     }
 
     with open(csv_file, 'w', newline='') as csvfile:
-        fieldnames = ['face_idx', 'translation_x', 'translation_y', 'translation_z', 'rotation_w', 'rotation_x', 'rotation_y', 'rotation_z']
+        fieldnames = ['face_id', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-        for idx in range(2):  # Only for the textured faces
-            if idx == 1 and one_sided:
-                continue
-            translation = face_centers[idx]
+        for idx in range(2):
+            if one_sided and idx == 1:
+                break
             rotation = rotations[idx]
             writer.writerow({
-                'face_idx': idx,
-                'translation_x': translation[0],
-                'translation_y': translation[1],
-                'translation_z': translation[2],
-                'rotation_w': rotation[3],
-                'rotation_x': rotation[0],
-                'rotation_y': rotation[1],
-                'rotation_z': rotation[2]
+                'face_id': idx,
+                'rot_w': rotation[3],
+                'rot_x': rotation[0],
+                'rot_y': rotation[1],
+                'rot_z': rotation[2]
             })
 
     print(f"CSV file saved to {csv_file}")
