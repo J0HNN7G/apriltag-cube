@@ -10,10 +10,7 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
     family_name = os.path.basename(os.path.normpath(family_dir))
     cube_name = f'cube_{family_name}_{side_length}'
 
-    # Ensure the output directory exists
     output_dir = os.path.join(output_dir, cube_name)
-    os.makedirs(output_dir, exist_ok=True)
-
     obj_file = os.path.join(output_dir, f'{cube_name}.obj')
     mtl_file = os.path.join(output_dir, f'{cube_name}.mtl')
     csv_file = os.path.join(output_dir, f'{cube_name}.csv')
@@ -50,6 +47,9 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
     texture_files = [f for f in os.listdir(family_dir) if f.endswith('.png') and os.path.basename(f).startswith('tag')]
     if len(texture_files) < 6:
         raise ValueError("At least 6 textures are needed in the directory.")
+    
+    # Ensure the output directory exists
+    os.makedirs(output_dir, exist_ok=True)
 
     texture_filenames = [os.path.splitext(f)[0] for f in texture_files]
     texture_idx = [int(f.split('_')[-1]) for f in texture_filenames]
@@ -125,14 +125,20 @@ def generate_cube_with_materials(side_length, family_dir, output_dir):
     }
 
     with open(csv_file, 'w', newline='') as csvfile:
-        fieldnames = ['face_id', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
+        fieldnames = ['face_id', 'tag_id', 'fam_name', 'trans_x', 'trans_y', 'trans_z', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
         for idx in range(6):
+            translation = [0, 0, -half_side]
             rotation = rotations[idx]
             writer.writerow({
                 'face_id': idx,
+                'tag_id': idx,
+                'fam_name': family_name,
+                'trans_x': translation[0],
+                'trans_y': translation[1],
+                'trans_z': translation[2],
                 'rot_w': rotation[3],
                 'rot_x': rotation[0],
                 'rot_y': rotation[1],

@@ -10,10 +10,7 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
     num_textures = 1 if one_sided else 2
     tile_name = f'tile{num_textures}_{family_name}_{side_length}'
 
-    # Ensure the output directory exists
     output_dir = os.path.join(output_dir, tile_name)
-    os.makedirs(output_dir, exist_ok=True)
-
     obj_file = os.path.join(output_dir, f'{tile_name}.obj')
     mtl_file = os.path.join(output_dir, f'{tile_name}.mtl')
     csv_file = os.path.join(output_dir, f'{tile_name}.csv')
@@ -54,6 +51,9 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
     texture_files = [f for f in os.listdir(family_dir) if f.endswith('.png') and os.path.basename(f).startswith('tag')]
     if len(texture_files) < 2:
         raise ValueError("At least 2 textures are needed in the directory.")
+
+    # Ensure the output directory exists
+    os.makedirs(output_dir, exist_ok=True)
 
     texture_filenames = [os.path.splitext(f)[0] for f in texture_files]
     texture_idx = [int(f.split('_')[-1]) for f in texture_filenames]
@@ -149,16 +149,22 @@ def generate_tile_with_materials(side_length, family_dir, output_dir, one_sided)
     }
 
     with open(csv_file, 'w', newline='') as csvfile:
-        fieldnames = ['face_id', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
+        fieldnames = ['face_id', 'tag_id', 'fam_name', 'trans_x', 'trans_y', 'trans_z', 'rot_w', 'rot_x', 'rot_y', 'rot_z']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
         for idx in range(2):
             if one_sided and idx == 1:
                 break
+            translation = [0, 0, -half_thin_side]
             rotation = rotations[idx]
             writer.writerow({
                 'face_id': idx,
+                'tag_id': idx,
+                'fam_name': family_name,
+                'trans_x' : translation[0],
+                'trans_y' : translation[1],
+                'trans_z' : translation[2],
                 'rot_w': rotation[3],
                 'rot_x': rotation[0],
                 'rot_y': rotation[1],
