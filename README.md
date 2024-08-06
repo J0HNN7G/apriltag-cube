@@ -90,10 +90,3 @@ To transform from a face coordinate frame to the cube center frame:
 2. Apply the rotation specified in the CSV
 
 These steps can be combined into a single 4x4 transformation matrix.
-
-## Additional Information
-
-- Ensure that Blender is installed and accessible from the command line to convert OBJ files to GLB.
-- Customize the paths and parameters as needed to fit your project structure and requirements.
-
-For further details or issues, refer to the respective scripts and their documentation.
