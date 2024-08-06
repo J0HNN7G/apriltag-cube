@@ -35,44 +35,36 @@ blender -b -P 'gen_glbs.py' -- data/
 
 ## AprilTag Pose Estimation and Coordinate Frame Conversion
 
-### Default AprilTag Detector Coordinate System
-
 The default AprilTag detector pose estimation defines the coordinate system as follows:
 
-#### Camera Frame
+#### Default Camera Frame
 - Origin: Camera center
 - Z-axis: Outward from the camera lens
 - Y-axis: Downward in the camera image
 - X-axis: Right in the camera image
 
-#### Tag Frame
+#### Default Tag Frame
 - Origin: Tag center
 - Z-axis: Into the tag
 - Y-axis: Downward
 - X-axis: Right
 
-### Desired Coordinate System
-
 For compatibility with certain simulators, we aim to use the following coordinate system:
 
-#### Camera Frame
+#### Desired Camera Frame
 - Z-axis: Inward to the camera lens
 - Y-axis: Upward in the camera image
 - X-axis: Right in the camera image
 
-#### Tag Frame
+#### Desired Tag Frame
 - Z-axis: Out of the tag
 - Y-axis: Upward
 - X-axis: Right
 
-### Coordinate Frame Conversion
-
 To convert from the default to the desired coordinate system:
 
 1. **Camera Frame:** Rotate 180° around the X-axis
-2. **Tag Orienation:** Rotate 180° around the X-axis
-
-### Cube Face Coordinate Frames
+2. **Tag Orientation:** Rotate 180° around the X-axis
 
 The CSV file provides rotations for each face ID, transforming face coordinate frames to the cube orientation frame:
 
