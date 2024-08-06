@@ -66,9 +66,7 @@ To convert from the default to the desired coordinate system:
 1. **Camera Frame:** Rotate 180° around the X-axis
 2. **Tag Orientation:** Rotate 180° around the X-axis
 
-The CSV file provides rotations for each face ID, transforming face coordinate frames to the cube orientation frame:
-
-Face ID to Cube Coordinate Frame Basis Vector Mapping:
+The CSV file provides rotations for each face ID, transforming face coordinate frames to the same orientation as the cube coordinate frame. The Face ID to Cube Coordinate Frame Basis Vector Mapping:
 - 0: +X axis
 - 1: -X axis
 - 2: +Y axis
@@ -76,9 +74,9 @@ Face ID to Cube Coordinate Frame Basis Vector Mapping:
 - 4: +Z axis
 - 5: -Z axis
 
-To transform from a face coordinate frame to the cube center frame:
+To transform from a face coordinate frame to the cube coordinate frame:
 
 1. Translate by half the cube's side length along the negative Z-axis
-2. Apply the rotation specified in the CSV
+2. Apply the rotation corresponding to the face/tag ID specified in the CSV
 
 These steps can be combined into a single 4x4 transformation matrix.
