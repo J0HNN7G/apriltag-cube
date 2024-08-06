@@ -2,6 +2,8 @@
 
 This repository provides tools to generate OBJ, MTL, CSV, and GLB files for AprilTag cubes and tiles. 
 
+![Example](https://github.com/J0HNN7G/apriltag-cube/blob/main/assets/example.png?raw=true)
+
 ## Prerequisites
 
 - To create GLB files, you need the Blender Python API (tested with Blender version 3.4.1).
