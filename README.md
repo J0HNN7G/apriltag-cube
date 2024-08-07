@@ -28,7 +28,7 @@ To generate files for 50 one-sided tile with a side length of 0.3 meters using t
 python gen_tile.py 0.3 50 data/apriltag-imgs/tag36h11/ data/
 ```
 
-### Converting Cube OBJ Files to GLB Files
+### Converting OBJ and MLT Files to GLB Files (+ deleting files no longer needed)
 
 To convert all the OBJ files in the data directory to GLB files, use the following Blender command:
 
