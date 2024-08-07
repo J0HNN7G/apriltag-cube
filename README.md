@@ -8,32 +8,35 @@ This repository provides tools to generate OBJ, MTL, CSV, and GLB files for Apri
 
 - To create GLB files, you need the Blender Python API (tested with Blender version 3.4.1).
 - Standard numerical packages: Numpy, Scipy.
+- tqdm for monitoring progress.
 
 ## Usage
 
 ### Creating OBJ, MTL, and CSV Files for a Cube
 
-To generate OBJ, MTL, and CSV files for a cube with a side length of 0.3 meters using the AprilTag family `tag36h11`, run:
+To generate OBJ, MTL, and CSV files for 50 cubes with a side length of 0.3 meters using the AprilTag family `tag36h11`, run:
 
 ```bash
-python gen_cube.py 0.3 data/apriltag-imgs/tag36h11/ data/
+python gen_cube.py 0.3 50 data/apriltag-imgs/tag36h11/ data/
 ```
 
 ### Creating OBJ, MTL, and CSV Files for a One-Sided Tile
 
-To generate files for a one-sided tile with a side length of 0.3 meters using the AprilTag family `tag36h11`, run:
+To generate files for 50 one-sided tile with a side length of 0.3 meters using the AprilTag family `tag36h11`, run:
 
 ```bash
-python gen_tile.py 0.3 data/apriltag-imgs/tag36h11/ data/ --one-sided
+python gen_tile.py 0.3 50 data/apriltag-imgs/tag36h11/ data/
 ```
 
 ### Converting Cube OBJ Files to GLB Files
 
-To convert all the cube OBJ files in the data directory to GLB files, use the following Blender command:
+To convert all the OBJ files in the data directory to GLB files, use the following Blender command:
 
 ```bash
 blender -b -P 'gen_glbs.py' -- data/
 ```
+
+Note, this will delete all the OBJ, MTL and PNG files.
 
 ## AprilTag Pose Estimation and Coordinate Frame Conversion
 
@@ -79,6 +82,8 @@ The CSV file provides rotations for each face ID, transforming face coordinate f
 To transform from a face coordinate frame to the cube coordinate frame:
 
 1. Translate by half the cube's side length along the negative Z-axis
-2. Apply the rotation corresponding to the face/tag ID specified in the CSV
+2. Apply the rotation corresponding to the face ID specified in the CSV
+
+The cube face id is the detected tag id mod 6, and for the tile, it is always the same transformation for all tags.
 
 These steps can be combined into a single 4x4 transformation matrix.

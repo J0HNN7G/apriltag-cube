@@ -59,3 +59,14 @@ if __name__ == "__main__":
     data_dir = Path(sys.argv[5])
 
     generate_cube_with_materials(data_dir)
+
+    # remove obj, mtl and png files
+    obj_paths = list(data_dir.glob('*/*.obj'))
+    for obj_path in obj_paths:
+        obj_path.unlink()
+    mtl_paths = list(data_dir.glob('*/*.mtl'))
+    for mtl_path in mtl_paths:
+        mtl_path.unlink()
+    png_paths = list(data_dir.glob('*/*.png'))
+    for png_path in png_paths:
+        png_path.unlink()
